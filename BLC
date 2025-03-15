@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beta Life Connection Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4CAF50; /* Green */
+            --secondary-color: #2E7D32; /* Dark Green */
+            --background-color: #FFFFFF; /* White */
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: #333;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        .search-bar {
+            display: flex;
+            align-items: center;
+        }
+        #search-input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+        }
+        #search-button {
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .member-card {
+            background-color: var(--background-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-form {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .login-form input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .login-form button {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Interface -->
+    <div id="login-view" class="login-container">
+        <div class="login-form">
+            <h2>Admin Login</h2>
+            <form id="login-form">
+                <input type="email" id="login-email" placeholder="Email" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Portal (Hidden by Default) -->
+    <div id="portal-view" class="app-container" style="display: none;">
+        <!-- Header -->
+        <header class="header bg-green-600 text-white p-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold">Beta Life Connection Portal</h1>
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Search by ID or Name" class="p-2 rounded-lg text-black">
+                    <button id="search-button" class="btn-primary ml-2">Search</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="p-4">
+            <!-- Registration Form -->
+            <div id="registration-view">
+                <h2 class="text-xl font-bold mb-4">Register New Member</h2>
+                <form id="registration-form">
+                    <div class="form-group mb-4">
+                        <label class="block text-sm font-medium mb-1">Full Name</label>
+                        <input type="text" id="name" class="form-control" required>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="block text-sm font-medium mb-1">Email</label>
+                        <input type="email" id="email" class="form-control" required>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="block text-sm font-medium mb-1">Contact Number</label>
+                        <input type="tel" id="contact-number" class="form-control" required>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="block text-sm font-medium mb-1">Referral Name</label>
+                        <input type="text" id="referral-name" class="form-control" required>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="block text-sm font-medium mb-1">Referral ID</label>
+                        <input type="text" id="referral-id" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Register</button>
+                </form>
+            </div>
+
+            <!-- Search Results -->
+            <div id="search-results" class="mt-4">
+                <!-- Search results will be dynamically inserted here -->
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+
+// Initialize Supabase
+const supabaseUrl = 'https://btznitqabsyohltpbtxm.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0em5pdHFhYnN5b2hsdHBidHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIwNjk0NTUsImV4cCI6MjA1NzY0NTQ1NX0.ZiPoUnmaXSNHTWmaz2rEaruQuIgk36tuSV87X6fHT10';
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+// Admin Credentials
+const ADMIN_EMAIL = 'marooncartel@gmail.com';
+const ADMIN_PASSWORD = 'council!1';
+
+// Function to handle login
+document.getElementById('login-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
+    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+        // Hide login view and show portal view
+        document.getElementById('login-view').style.display = 'none';
+        document.getElementById('portal-view').style.display = 'block';
+    } else {
+        alert('Invalid email or password.');
+    }
+});
+
+// Function to generate Membership ID
+function generateMemberId() {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const number = String(Math.floor(Math.random() * 1000)).padStart(3, '0'); // Ensure 3 digits
+    return `BLC-${year}-${month}-${number}`;
+}
+
+// Function to register a new member
+document.getElementById('registration-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const contactNumber = document.getElementById('contact-number').value;
+    const referralName = document.getElementById('referral-name').value;
+    const referralId = document.getElementById('referral-id').value;
+
+    const memberId = generateMemberId();
+    const { data, error } = await supabase
+        .from('members')
+        .insert([{
+            member_id: memberId,
+            name,
+            email,
+            contact_number: contactNumber, // Add contact number
+            referral_name: referralName,
+            referral_id: referralId,
+            time_joined: new Date().toISOString(),
+            level: 0,
+            income: 0,
+            referral_count: 0
+        }]);
+
+    if (error) {
+        console.error('Error registering member:', error);
+    } else {
+        alert('Member registered successfully!');
+        document.getElementById('registration-form').reset();
+    }
+});
+
+// Function to search for members
+async function searchMembers(searchTerm) {
+    const { data, error } = await supabase
+        .from('members')
+        .select('*')
+        .or(`member_id.ilike.%${searchTerm}%,name.ilike.%${searchTerm}%`);
+
+    if (error) {
+        console.error('Error searching members:', error);
+        return [];
+    } else {
+        return data;
+    }
+}
+
+// Function to display search results
+function displaySearchResults(results) {
+    const resultsContainer = document.getElementById('search-results');
+    resultsContainer.innerHTML = ''; // Clear previous results
+
+    if (results.length === 0) {
+        resultsContainer.innerHTML = '<p class="text-gray-600">No members found.</p>';
+        return;
+    }
+
+    results.forEach(member => {
+        const div = document.createElement('div');
+        div.className = 'member-card bg-white p-4 rounded-lg shadow mb-4';
+        div.innerHTML = `
+            <p class="font-medium">${member.name}</p>
+            <p class="text-sm text-gray-600">ID: ${member.member_id}</p>
+            <p class="text-sm text-gray-600">Level: ${member.level}</p>
+            <p class="text-sm text-gray-600">Income: ₦${member.income.toLocaleString()}</p>
+        `;
+        resultsContainer.appendChild(div);
+    });
+}
+
+// Event listener for the search button
+document.getElementById('search-button').addEventListener('click', async () => {
+    const searchTerm = document.getElementById('search-input').value.trim();
+    if (searchTerm) {
+        const results = await searchMembers(searchTerm);
+        displaySearchResults(results);
+    } else {
+        alert('Please enter a search term.');
+    }
+});
+
+// Event listener for pressing "Enter" in the search input
+document.getElementById('search-input').addEventListener('keypress', async (e) => {
+    if (e.key === 'Enter') {
+        const searchTerm = document.getElementById('search-input').value.trim();
+        if (searchTerm) {
+            const results = await searchMembers(searchTerm);
+            displaySearchResults(results);
+        } else {
+            alert('Please enter a search term.');
+        }
+    }
+});
+
